@@ -8,7 +8,7 @@ export const slider = {
         }
     },
     mounted() {
-
+        window.addEventListener('resize', this.updateWidth)
         let allChildren = this.$refs.carousel.children;
         for (let i = 0; i < allChildren.length; i++) {
             if (allChildren[i].classList.contains('slider-slide')) {
@@ -29,7 +29,6 @@ export const slider = {
             }
         },
         previouse() {
-            this.updateWidth();
             if(this.indexCurrentSlide == 0) {
                 this.indexCurrentSlide = this.slides.length - 1;
             } else {
@@ -37,6 +36,7 @@ export const slider = {
             }
         },
         updateWidth() {
+            console.log('Changed!')
             this.width = this.$el.offsetWidth;
         }
     },
@@ -47,7 +47,7 @@ export const slider = {
         }
     },
     template: `
-        <div class="slider-main" style="overflow: hidden; width:100%; height: 500px; position: relative;">
+        <div @resize="this.updateWidth()" class="slider-main" style="overflow: hidden; width:100%; height: 500px; position: relative;">
             <div ref="carousel" class="slider-carousel" :style="'transition: 0.3s; transform: translateX(-' + this.shift + 'px);  display: flex; height: inherit; min-width: inherit'">
                 <slot></slot>
             </div>
