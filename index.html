@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Slider Vue3</title>
+        <script src="https://unpkg.com/vue@3"></script>
+        <script src="index.js" type="module"></script>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <slider>
+                <slide><span style="display: block; width: inherit; height: inherit; background: red">1</span></slide>
+                <slide><span style="display: block; width: inherit; height: inherit; background: blue">2</span></slide>
+                <slide><span style="display: block; width: inherit; height: inherit; background: purple">3</span></slide>
+                <slide><span style="display: block; width: inherit; height: inherit; background: orange">4</span></slide>
+            </slider>
+        </div>
+    </body>
+</html>
