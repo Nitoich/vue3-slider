@@ -1,5 +1,6 @@
 export const slider = {
     name: 'SLIDER',
+    props: ['height'],
     data() {
         return {
             slides: [],
@@ -47,7 +48,7 @@ export const slider = {
         }
     },
     template: `
-        <div @resize="this.updateWidth()" class="slider-main" style="overflow: hidden; width:100%; height: 500px; position: relative;">
+        <div @resize="this.updateWidth()" class="slider-main" :style="'height: ' + (this.height === undefined ? 'max-content' : (this.height + 'px'))" style="overflow: hidden; width:100%; position: relative;">
             <div ref="carousel" class="slider-carousel" :style="'transition: 0.3s; transform: translateX(-' + this.shift + 'px);  display: flex; height: inherit; min-width: inherit'">
                 <slot></slot>
             </div>
