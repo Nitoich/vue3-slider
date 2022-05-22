@@ -16,13 +16,10 @@ export const slider = {
                 this.slides.push(allChildren[i]);
             }
         }
-        console.log(this.slides)
     },
     methods: {
         next() {
             this.updateWidth();
-            console.log(this.indexCurrentSlide);
-            console.log(this.slides.length)
             if(this.indexCurrentSlide == this.slides.length - 1) {
                 this.indexCurrentSlide = 0;
             } else {
@@ -37,13 +34,11 @@ export const slider = {
             }
         },
         updateWidth() {
-            console.log('Changed!')
             this.width = this.$el.offsetWidth;
         }
     },
     computed: {
         shift() {
-            console.log(this.indexCurrentSlide)
             return (this.width * this.indexCurrentSlide);
         }
     },
