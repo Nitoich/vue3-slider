@@ -44,11 +44,18 @@ export const slider = {
         mouseDown(event) {
             this.mouseData.mouseL = true;
             this.mouseData.mouseStartPos = event.clientX;
+            this.mouseData.mouseClientX = event.clientX;
             this.$refs.carousel.addEventListener('mousemove', this.moving)
         },
         mouseUp() {
             this.mouseData.mouseL = false;
-            this.$refs.carousel.removeEventListener('mousemove', this.moving)
+            if (this.shiftMouse > this.width / 2) {
+                this.next();
+            } else if(this.shiftMouse < -(this.width / 2)) {
+                this.previouse();
+            }
+
+            this.$refs.carousel.removeEventListener('mousemove', this.moving);
         },
         moving(event) {
             this.mouseData.mouseClientX = event.clientX;
@@ -57,7 +64,7 @@ export const slider = {
     },
     computed: {
         shift() {
-            return (this.width * this.indexCurrentSlide);
+            return this.mouseData.mouseL ? this.shiftMouse + (this.width * this.indexCurrentSlide) : (this.width * this.indexCurrentSlide);
         },
         shiftMouse() {
             return (this.mouseData.mouseStartPos - this.mouseData.mouseClientX);
@@ -65,7 +72,7 @@ export const slider = {
     },
     template: `
         <div @resize="this.updateWidth()" class="slider-main" :style="'height: ' + (this.height === undefined ? 'max-content' : (this.height + 'px'))" style="overflow: hidden; width:100%; position: relative;">
-            <div ref="carousel" @mousedown="this.mouseDown($event)" @mouseup="this.mouseUp()" class="slider-carousel" :style="'transition: 0.3s; transform: translateX(-' + this.shift + 'px);  display: flex; height: inherit; min-width: inherit'">
+            <div ref="carousel" @mousedown="this.mouseDown($event)" @mouseup="this.mouseUp()" class="slider-carousel" :style="'cursor:' + (this.mouseData.mouseL ? 'grabbing' : 'grab') + '; transition: ' + (this.mouseData.mouseL ? '0' : '0.3s') + '; transform: translateX(-' + this.shift + 'px);  display: flex; height: inherit; min-width: inherit'">
                 <slot></slot>
             </div>
             <button class="slider-nextButton" @click="this.next()" style="position: absolute; top: 50%; right: 20px;">-></button>
