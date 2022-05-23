@@ -1,9 +1,10 @@
-import {slider, slide} from "./components/slider.js";
+import {slider, slide, PerspectiveSlider} from "./components/slider.js";
 
 export default {
     name: 'App',
     components: {
         slider,
-        slide
+        slide,
+        PerspectiveSlider
     }
 }
