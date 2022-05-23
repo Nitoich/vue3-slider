@@ -1,0 +1,1 @@
+<h1><a href="https://nitoich.github.io/vue3-slider/">Click here to go demo</a> (https://nitoich.github.io/vue3-slider/)</h1>

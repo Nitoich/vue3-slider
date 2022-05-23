@@ -19,13 +19,15 @@
     </head>
     <body>
         <div id="app">
-            <slider :height="500">
+            <h1 style="text-align: center">Default slider</h1>
+            <slider :height="500" :controls="false">
                 <slide><span style="display: block; width: inherit; height: inherit; background: red">1</span></slide>
                 <slide><span style="display: block; width: inherit; height: inherit; background: blue">2</span></slide>
                 <slide><span style="display: block; width: inherit; height: inherit; background: purple">3</span></slide>
                 <slide><span style="display: block; width: inherit; height: inherit; background: orange">4</span></slide>
             </slider>
             <br>
+            <h1 style="text-align: center">Perspective slider</h1>
             <perspective-slider>
                 <slide><span style="display: block; width: inherit; height: inherit; background: red">1</span></slide>
                 <slide><span style="display: block; width: inherit; height: inherit; background: blue">2</span></slide>

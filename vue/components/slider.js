@@ -1,6 +1,6 @@
 export const slider = {
     name: 'SLIDER',
-    props: ['height'],
+    props: ['height', 'controls'],
     data() {
         return {
             slides: [],
@@ -49,9 +49,9 @@ export const slider = {
         },
         mouseUp() {
             this.mouseData.mouseL = false;
-            if (this.shiftMouse > this.width / 2) {
+            if (this.shiftMouse > this.width / 4) {
                 this.next();
-            } else if(this.shiftMouse < -(this.width / 2)) {
+            } else if(this.shiftMouse < -(this.width / 4)) {
                 this.previouse();
             }
 
@@ -75,8 +75,8 @@ export const slider = {
             <div ref="carousel" @mousedown="this.mouseDown($event)" @mouseup="this.mouseUp()" class="slider-carousel" :style="'cursor:' + (this.mouseData.mouseL ? 'grabbing' : 'grab') + '; transition: ' + (this.mouseData.mouseL ? '0' : '0.3s') + '; transform: translateX(-' + this.shift + 'px);  display: flex; height: inherit; min-width: inherit'">
                 <slot></slot>
             </div>
-            <button class="slider-nextButton" @click="this.next()" style="position: absolute; top: 50%; right: 20px;">-></button>
-            <button class="slider-previousButton" @click="this.previouse()" style="position: absolute; top: 50%; left: 20px;"><-</button>
+            <button v-if="this.controls ?? true" class="slider-nextButton" @click="this.next()" style="position: absolute; top: 50%; right: 20px;">-></button>
+            <button v-if="this.controls ?? true" class="slider-previousButton" @click="this.previouse()" style="position: absolute; top: 50%; left: 20px;"><-</button>
         </div>
     `
 }
