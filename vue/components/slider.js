@@ -6,6 +6,11 @@ export const slider = {
             slides: [],
             indexCurrentSlide: 0,
             width: 0,
+            mouseData: {
+                mouseL: false,
+                mouseClientX: 0,
+                mouseStartPos: 0,
+            }
         }
     },
     mounted() {
@@ -35,16 +40,32 @@ export const slider = {
         },
         updateWidth() {
             this.width = this.$el.offsetWidth;
+        },
+        mouseDown(event) {
+            this.mouseData.mouseL = true;
+            this.mouseData.mouseStartPos = event.clientX;
+            this.$refs.carousel.addEventListener('mousemove', this.moving)
+        },
+        mouseUp() {
+            this.mouseData.mouseL = false;
+            this.$refs.carousel.removeEventListener('mousemove', this.moving)
+        },
+        moving(event) {
+            this.mouseData.mouseClientX = event.clientX;
+            console.log(this.shiftMouse)
         }
     },
     computed: {
         shift() {
             return (this.width * this.indexCurrentSlide);
+        },
+        shiftMouse() {
+            return (this.mouseData.mouseStartPos - this.mouseData.mouseClientX);
         }
     },
     template: `
         <div @resize="this.updateWidth()" class="slider-main" :style="'height: ' + (this.height === undefined ? 'max-content' : (this.height + 'px'))" style="overflow: hidden; width:100%; position: relative;">
-            <div ref="carousel" class="slider-carousel" :style="'transition: 0.3s; transform: translateX(-' + this.shift + 'px);  display: flex; height: inherit; min-width: inherit'">
+            <div ref="carousel" @mousedown="this.mouseDown($event)" @mouseup="this.mouseUp()" class="slider-carousel" :style="'transition: 0.3s; transform: translateX(-' + this.shift + 'px);  display: flex; height: inherit; min-width: inherit'">
                 <slot></slot>
             </div>
             <button class="slider-nextButton" @click="this.next()" style="position: absolute; top: 50%; right: 20px;">-></button>
@@ -65,7 +86,7 @@ export const PerspectiveSlider = {
     },
     mounted() {
         this.updateWidth()
-        window.addEventListener('resize', this.updateWidth)
+            window.addEventListener('resize', this.updateWidth)
         let allChildren = this.$refs.carousel.children;
         for (let i = 0; i < allChildren.length; i++) {
             if (allChildren[i].classList.contains('slider-slide')) {
