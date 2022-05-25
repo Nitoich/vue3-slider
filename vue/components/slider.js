@@ -1,10 +1,10 @@
 export const slider = {
     name: 'SLIDER',
-    props: ['height', 'controls'],
+    props: ['height', 'controls', 'loop'],
     data() {
         return {
             slides: [],
-            indexCurrentSlide: 1,
+            indexCurrentSlide: this.loop ? 1 : 0,
             width: 0,
             canAnimation: true,
             mouseData: {
@@ -24,46 +24,58 @@ export const slider = {
             }
         }
 
-        let newSlidesArray = [];
-        newSlidesArray.push(this.slides[this.slides.length - 1]);
-        this.slides.forEach(el => {
-            newSlidesArray.push(el);
-        })
-        newSlidesArray.push(this.slides[0]);
 
-        this.slides = newSlidesArray;
+        if(this.loop) {
+            let newSlidesArray = [];
+            newSlidesArray.push(this.slides[this.slides.length - 1]);
+            this.slides.forEach(el => {
+                newSlidesArray.push(el);
+            })
+            newSlidesArray.push(this.slides[0]);
 
-        let newLastElement = this.slides[0].cloneNode(true);
-        let newFirstElement = this.slides[this.slides.length - 1].cloneNode(true);
+            this.slides = newSlidesArray;
 
-        this.$refs.carousel.append(newFirstElement);
-        this.$refs.carousel.prepend(newLastElement);
+
+            let newLastElement = this.slides[0].cloneNode(true);
+            let newFirstElement = this.slides[this.slides.length - 1].cloneNode(true);
+
+            this.$refs.carousel.append(newFirstElement);
+            this.$refs.carousel.prepend(newLastElement);
+        }
     },
     methods: {
         next() {
-            this.updateWidth();
-            this.indexCurrentSlide++;
-            if(this.indexCurrentSlide == this.slides.length - 1) {
-                setTimeout(() => {
-                    this.canAnimation = false;
-                    this.indexCurrentSlide = 1;
-                },300)
-                setTimeout(() => {
-                    this.canAnimation = true;
-                }, 350)
+            if(this.loop) {
+                this.indexCurrentSlide++;
+                if(this.indexCurrentSlide == this.slides.length - 1) {
+                    setTimeout(() => {
+                        this.canAnimation = false;
+                        this.indexCurrentSlide = 1;
+                    },300)
+                    setTimeout(() => {
+                        this.canAnimation = true;
+                    }, 350)
+                }
+            } else {
+                if(this.indexCurrentSlide != this.slides.length - 1) {this.indexCurrentSlide++}
             }
         },
         previouse() {
-            this.indexCurrentSlide--;
-            if(this.indexCurrentSlide == 0) {
-               setTimeout(() => {
-                   this.canAnimation = false;
-                   this.indexCurrentSlide = this.slides.length - 2;
-               }, 300);
-               setTimeout(() => {
-                   this.canAnimation = true;
-               }, 350);
+            if(this.loop) {
+                this.indexCurrentSlide--;
+                if(this.indexCurrentSlide == 0) {
+                    setTimeout(() => {
+                        this.canAnimation = false;
+                        this.indexCurrentSlide = this.slides.length - 2;
+                    }, 300);
+                    setTimeout(() => {
+                        this.canAnimation = true;
+                    }, 350);
+                }
+            } else {
+                if(this.indexCurrentSlide != 0) {this.indexCurrentSlide--}
             }
+
         },
         updateWidth() {
             this.width = this.$el.offsetWidth;
