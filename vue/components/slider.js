@@ -4,8 +4,9 @@ export const slider = {
     data() {
         return {
             slides: [],
-            indexCurrentSlide: 0,
+            indexCurrentSlide: 1,
             width: 0,
+            canAnimation: true,
             mouseData: {
                 mouseL: false,
                 mouseClientX: 0,
@@ -14,6 +15,7 @@ export const slider = {
         }
     },
     mounted() {
+        this.updateWidth();
         window.addEventListener('resize', this.updateWidth)
         let allChildren = this.$refs.carousel.children;
         for (let i = 0; i < allChildren.length; i++) {
@@ -21,21 +23,46 @@ export const slider = {
                 this.slides.push(allChildren[i]);
             }
         }
+
+        let newSlidesArray = [];
+        newSlidesArray.push(this.slides[this.slides.length - 1]);
+        this.slides.forEach(el => {
+            newSlidesArray.push(el);
+        })
+        newSlidesArray.push(this.slides[0]);
+
+        this.slides = newSlidesArray;
+
+        let newLastElement = this.slides[0].cloneNode(true);
+        let newFirstElement = this.slides[this.slides.length - 1].cloneNode(true);
+
+        this.$refs.carousel.append(newFirstElement);
+        this.$refs.carousel.prepend(newLastElement);
     },
     methods: {
         next() {
             this.updateWidth();
+            this.indexCurrentSlide++;
             if(this.indexCurrentSlide == this.slides.length - 1) {
-                this.indexCurrentSlide = 0;
-            } else {
-                this.indexCurrentSlide++;
+                setTimeout(() => {
+                    this.canAnimation = false;
+                    this.indexCurrentSlide = 1;
+                },300)
+                setTimeout(() => {
+                    this.canAnimation = true;
+                }, 350)
             }
         },
         previouse() {
+            this.indexCurrentSlide--;
             if(this.indexCurrentSlide == 0) {
-                this.indexCurrentSlide = this.slides.length - 1;
-            } else {
-                this.indexCurrentSlide--;
+               setTimeout(() => {
+                   this.canAnimation = false;
+                   this.indexCurrentSlide = this.slides.length - 2;
+               }, 300);
+               setTimeout(() => {
+                   this.canAnimation = true;
+               }, 350);
             }
         },
         updateWidth() {
@@ -46,6 +73,7 @@ export const slider = {
             this.mouseData.mouseStartPos = event.clientX;
             this.mouseData.mouseClientX = event.clientX;
             this.$refs.carousel.addEventListener('mousemove', this.moving)
+            this.$refs.carousel.addEventListener('mouseleave', this.mouseUp);
         },
         mouseUp() {
             this.mouseData.mouseL = false;
@@ -56,6 +84,7 @@ export const slider = {
             }
 
             this.$refs.carousel.removeEventListener('mousemove', this.moving);
+            this.$refs.carousel.removeEventListener('mouseleave', this.mouseUp);
         },
         moving(event) {
             this.mouseData.mouseClientX = event.clientX;
@@ -72,7 +101,7 @@ export const slider = {
     },
     template: `
         <div @resize="this.updateWidth()" class="slider-main" :style="'height: ' + (this.height === undefined ? 'max-content' : (this.height + 'px'))" style="overflow: hidden; width:100%; position: relative;">
-            <div ref="carousel" @mousedown="this.mouseDown($event)" @mouseup="this.mouseUp()" class="slider-carousel" :style="'cursor:' + (this.mouseData.mouseL ? 'grabbing' : 'grab') + '; transition: ' + (this.mouseData.mouseL ? '0' : '0.3s') + '; transform: translateX(-' + this.shift + 'px);  display: flex; height: inherit; min-width: inherit'">
+            <div ref="carousel" @mousedown="this.mouseDown($event)" @mouseup="this.mouseUp()" class="slider-carousel" :style="'cursor:' + (this.mouseData.mouseL ? 'grabbing' : 'grab') + '; transition: ' + ((this.mouseData.mouseL || !this.canAnimation) ? '0' : '0.3s') + '; transform: translateX(-' + this.shift + 'px);  display: flex; height: inherit; min-width: inherit; user-select: none;'">
                 <slot></slot>
             </div>
             <button v-if="this.controls ?? true" class="slider-nextButton" @click="this.next()" style="position: absolute; top: 50%; right: 20px;">-></button>
