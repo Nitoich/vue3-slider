@@ -1,3 +1,48 @@
+export const PSlider = {
+    name: 'PanaramaSlider',
+    props: ['height'],
+    data() {
+        return {
+            slides: [],
+            indexCurrentSlide: 0,
+            width: 0
+        }
+    },
+    mounted() {
+        console.log(123)
+        this.updateWidth();
+        window.addEventListener('resize', this.updateWidth)
+        let allChildren = this.$refs.carousel.children;
+        for (let i = 0; i < allChildren.length; i++) {
+            if (allChildren[i].classList.contains('slider-slide')) {
+                this.slides.push(allChildren[i]);
+                this.slides[i].style.position = 'absolute';
+                this.slides[i].style.origin = 'center center';
+            }
+        }
+
+        for(let i = 0; i < this.slides.length; i++) {
+            let degPreviousSlide = (i == 0) ? -(180 - (360 / this.slides.length)) : (this.slides[i - 1].style.transform.replace('rotateY(', '').replace('deg)', ''));
+            let currentDeg = Number(degPreviousSlide) + (180 - (360 / this.slides.length));
+            this.slides[i].style.transform = `rotateY(${currentDeg}deg) translateX(${this.width * Math.cos(currentDeg)}px) translateY(${this.width * Math.sin(currentDeg)}px)`;
+        }
+    },
+    methods: {
+        updateWidth() {
+            this.width = this.$el.offsetWidth;
+        }
+    },
+    template: `
+        <div @resize="this.updateWidth()" class="slider-main" :style="'height: ' + (this.height === undefined ? 'max-content' : (this.height + 'px'))" style="overflow: hidden; width:100%; position: relative;">
+            <div  class="slider-carousel" :style="'transition: 0.3s; perspective: 500px; perspective-origin: center center; display: flex; height: inherit; min-width: inherit; user-select: none;'">
+                <div ref="carousel" class="3d-carousel" style="transform-style: preserve-3d; width: 100%; transform: translateZ(-100px);">
+                    <slot></slot>
+                </div>
+            </div>
+        </div>
+    `
+};
+
 export const slider = {
     name: 'SLIDER',
     props: ['height', 'controls', 'loop'],
@@ -23,6 +68,8 @@ export const slider = {
                 this.slides.push(allChildren[i]);
             }
         }
+
+
 
 
         if(this.loop) {
@@ -174,7 +221,7 @@ export const PerspectiveSlider = {
 export const slide = {
     name: 'SLIDE',
     template: `
-        <div class="slider-slide" style="position: relative; min-width: 100%; height: 100%">
+        <div class="slider-slide" style=" min-width: 100%; height: 100%">
             <slot></slot>
         </div>
     `
