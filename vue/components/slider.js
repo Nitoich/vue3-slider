@@ -5,7 +5,8 @@ export const PSlider = {
         return {
             slides: [],
             indexCurrentSlide: 0,
-            width: 0
+            width: 0,
+            deg: 0
         }
     },
     mounted() {
@@ -17,24 +18,39 @@ export const PSlider = {
             if (allChildren[i].classList.contains('slider-slide')) {
                 this.slides.push(allChildren[i]);
                 this.slides[i].style.position = 'absolute';
-                this.slides[i].style.origin = 'center center';
+                this.slides[i].transformStyle = 'preserve-3d';
+                this.slides[i].transformOrigin = 'center center';
             }
         }
 
         for(let i = 0; i < this.slides.length; i++) {
-            let degPreviousSlide = (i == 0) ? -(180 - (360 / this.slides.length)) : (this.slides[i - 1].style.transform.replace('rotateY(', '').replace('deg)', ''));
+            let degPreviousSlide = 0;
+            if (i == 0) {
+                degPreviousSlide = -(180 - (360 / this.slides.length));
+            } else {
+                degPreviousSlide = this.slides[i - 1].style.transform;
+                degPreviousSlide = degPreviousSlide.slice(degPreviousSlide.indexOf('rotateY('), degPreviousSlide.indexOf('d')).replace('rotateY(', '');
+            }
             let currentDeg = Number(degPreviousSlide) + (180 - (360 / this.slides.length));
-            this.slides[i].style.transform = `rotateY(${currentDeg}deg) translateX(${this.width * Math.cos(currentDeg)}px) translateY(${this.width * Math.sin(currentDeg)}px)`;
+            console.log(i + ' --- ' + degPreviousSlide);
+            console.log(currentDeg)
+            this.slides[i].style.transform = `translateX(${this.width * Math.cos(currentDeg)}px) translateZ(${this.width * Math.sin(currentDeg)}px) rotateY(${currentDeg}deg)`;
         }
+
+        setInterval(this.rotate, 20)
     },
     methods: {
         updateWidth() {
             this.width = this.$el.offsetWidth;
+        },
+        rotate() {
+            this.$refs.carousel.style.transform = `rotateY(${this.deg}deg)`;
+            this.deg = this.deg + 1;
         }
     },
     template: `
         <div @resize="this.updateWidth()" class="slider-main" :style="'height: ' + (this.height === undefined ? 'max-content' : (this.height + 'px'))" style="overflow: hidden; width:100%; position: relative;">
-            <div  class="slider-carousel" :style="'transition: 0.3s; perspective: 500px; perspective-origin: center center; display: flex; height: inherit; min-width: inherit; user-select: none;'">
+            <div  class="slider-carousel" :style="'transition: 0.3s; perspective: 500px; perspective-origin: 50% 50%; display: flex; height: inherit; min-width: inherit; user-select: none;'">
                 <div ref="carousel" class="3d-carousel" style="transform-style: preserve-3d; width: 100%; transform: translateZ(-100px);">
                     <slot></slot>
                 </div>
