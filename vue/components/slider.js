@@ -37,11 +37,16 @@ export const PSlider = {
             this.slides[i].style.transform = `rotateY(${currentDeg}deg) translateZ(${this.width}px)`;
         }
 
-        setInterval(this.rotate, 20)
+        // setInterval(this.rotate, 20)
     },
     methods: {
         updateWidth() {
             this.width = this.$el.offsetWidth;
+        },
+        next() {
+            console.log(this.deg)
+            this.deg = (this.deg >= 360) ? 0 : this.deg + this.slideAngle;
+            this.$refs.carousel.style.transform = `rotateY(${this.deg}deg)`;
         },
         rotate() {
             this.$refs.carousel.style.transform = `rotateY(${this.deg}deg)`;
@@ -54,9 +59,9 @@ export const PSlider = {
         }
     },
     template: `
-        <div @resize="this.updateWidth()" class="slider-main" :style="'height: ' + (this.height === undefined ? 'max-content' : (this.height + 'px'))" style="overflow: hidden; width:100%; position: relative;">
+        <div @click="this.next()" @resize="this.updateWidth()" class="slider-main" :style="'height: ' + (this.height === undefined ? 'max-content' : (this.height + 'px'))" style="overflow: hidden; width:100%; position: relative;">
             <div  class="slider-carousel" :style="'transition: 0.3s; perspective: 500px; perspective-origin: 50% 50%; display: flex; height: inherit; min-width: inherit; user-select: none;'">
-                <div ref="carousel" class="3d-carousel" style="transform-style: preserve-3d; width: 100%; transform: translateZ(-100px);">
+                <div ref="carousel" class="3d-carousel" style="transition: 0.3s ;transform-style: preserve-3d; width: 100%; transform: translateZ(-100px);">
                     <slot></slot>
                 </div>
             </div>
