@@ -6,10 +6,12 @@ export const PSlider = {
             slides: [],
             indexCurrentSlide: 0,
             width: 0,
-            deg: 0
+            deg: 0,
+            isAnimate: false
         }
     },
     mounted() {
+        this.$refs.carousel.style.transition = '0.8s';
         console.log(123)
         this.updateWidth();
         window.addEventListener('resize', this.updateWidth)
@@ -40,13 +42,35 @@ export const PSlider = {
         // setInterval(this.rotate, 20)
     },
     methods: {
+        getDegSlide(index) {
+            return this.slides[index].style.transform.slice(degPreviousSlide.indexOf('rotateY('), degPreviousSlide.indexOf('d')).replace('rotateY(', '');
+        },
         updateWidth() {
             this.width = this.$el.offsetWidth;
         },
         next() {
-            console.log(this.deg)
-            this.deg = (this.deg >= 360) ? 0 : this.deg + this.slideAngle;
-            this.$refs.carousel.style.transform = `rotateY(${this.deg}deg)`;
+            if (!this.isAnimate) {
+                this.isAnimate = true;
+                setTimeout(() => {
+                    this.isAnimate = false;
+                }, 830);
+
+                this.indexCurrentSlide++;
+                this.deg += this.slideAngle;
+                this.$refs.carousel.style.transform = `rotateY(${this.deg}deg)`;
+                if (this.deg >= 360) {
+                    this.deg = 0;
+                    setTimeout(() => {
+                        this.$refs.carousel.style.transition = 'none';
+                        this.$refs.carousel.style.transform = `rotateY(0deg)`;
+
+                        setTimeout(() => {
+                            this.$refs.carousel.style.transition = '0.8s';
+                        }, 20)
+                    }, 810)
+                }
+                console.log(this.deg)
+            }
         },
         rotate() {
             this.$refs.carousel.style.transform = `rotateY(${this.deg}deg)`;
@@ -61,7 +85,7 @@ export const PSlider = {
     template: `
         <div @click="this.next()" @resize="this.updateWidth()" class="slider-main" :style="'height: ' + (this.height === undefined ? 'max-content' : (this.height + 'px'))" style="overflow: hidden; width:100%; position: relative;">
             <div  class="slider-carousel" :style="'transition: 0.3s; perspective: 500px; perspective-origin: 50% 50%; display: flex; height: inherit; min-width: inherit; user-select: none;'">
-                <div ref="carousel" class="3d-carousel" style="transition: 0.3s ;transform-style: preserve-3d; width: 100%; transform: translateZ(-100px);">
+                <div ref="carousel" class="3d-carousel" style="transform-style: preserve-3d; width: 100%;" :style="'transform: translateZ(' + this.width + ')'">
                     <slot></slot>
                 </div>
             </div>
