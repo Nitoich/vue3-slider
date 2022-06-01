@@ -26,15 +26,15 @@ export const PSlider = {
         for(let i = 0; i < this.slides.length; i++) {
             let degPreviousSlide = 0;
             if (i == 0) {
-                degPreviousSlide = -(180 - (360 / this.slides.length));
+                degPreviousSlide = -this.slideAngle;
             } else {
                 degPreviousSlide = this.slides[i - 1].style.transform;
                 degPreviousSlide = degPreviousSlide.slice(degPreviousSlide.indexOf('rotateY('), degPreviousSlide.indexOf('d')).replace('rotateY(', '');
             }
-            let currentDeg = Number(degPreviousSlide) + (180 - (360 / this.slides.length));
+            let currentDeg = Number(degPreviousSlide) + this.slideAngle;
             console.log(i + ' --- ' + degPreviousSlide);
             console.log(currentDeg)
-            this.slides[i].style.transform = `rotateY(${currentDeg}deg) translateZ(${this.width / 2}px)`;
+            this.slides[i].style.transform = `rotateY(${currentDeg}deg) translateZ(${this.width}px)`;
         }
 
         setInterval(this.rotate, 20)
@@ -46,6 +46,11 @@ export const PSlider = {
         rotate() {
             this.$refs.carousel.style.transform = `rotateY(${this.deg}deg)`;
             this.deg = this.deg + 1;
+        }
+    },
+    computed: {
+        slideAngle() {
+            return (360 / this.slides.length);
         }
     },
     template: `
