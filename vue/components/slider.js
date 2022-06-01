@@ -34,7 +34,7 @@ export const PSlider = {
             let currentDeg = Number(degPreviousSlide) + (180 - (360 / this.slides.length));
             console.log(i + ' --- ' + degPreviousSlide);
             console.log(currentDeg)
-            this.slides[i].style.transform = `translateX(${this.width * Math.cos(currentDeg)}px) translateZ(${this.width * Math.sin(currentDeg)}px) rotateY(${currentDeg}deg)`;
+            this.slides[i].style.transform = `rotateY(${currentDeg}deg) translateZ(${this.width / 2}px)`;
         }
 
         setInterval(this.rotate, 20)
