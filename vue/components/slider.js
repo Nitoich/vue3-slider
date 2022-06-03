@@ -7,7 +7,12 @@ export const PSlider = {
             indexCurrentSlide: 0,
             width: 0,
             deg: 0,
-            isAnimate: false
+            isAnimate: false,
+            mouseData: {
+                isHold: false,
+                startXPosition: 0,
+                currentXPosition: 0
+            }
         }
     },
     mounted() {
@@ -43,7 +48,7 @@ export const PSlider = {
     },
     methods: {
         getDegSlide(index) {
-            return this.slides[index].style.transform.slice(degPreviousSlide.indexOf('rotateY('), degPreviousSlide.indexOf('d')).replace('rotateY(', '');
+            return this.slides[index].style.transform.slice(this.slides[index].style.transform.indexOf('rotateY('), this.slides[index].style.transform.indexOf('d')).replace('rotateY(', '');
         },
         updateWidth() {
             this.width = this.$el.offsetWidth;
@@ -59,6 +64,7 @@ export const PSlider = {
                 this.deg += this.slideAngle;
                 this.$refs.carousel.style.transform = `rotateY(${this.deg}deg)`;
                 if (this.deg >= 360) {
+                    this.indexCurrentSlide = 0;
                     this.deg = 0;
                     setTimeout(() => {
                         this.$refs.carousel.style.transition = 'none';
@@ -75,16 +81,37 @@ export const PSlider = {
         rotate() {
             this.$refs.carousel.style.transform = `rotateY(${this.deg}deg)`;
             this.deg = this.deg + 1;
+        },
+        mouseDown(event) {
+            this.mouseData.isHold = true;
+            this.mouseData.startXPosition = event.clientX;
+            this.mouseData.currentXPosition = event.clientX;
+            this.$refs.carousel2.addEventListener('mousemove', this.moving);
+        },
+        mouseUp(event) {
+            this.mouseData.isHold = false;
+            let deg = this.getDegSlide(this.indexCurrentSlide);
+            this.$refs.carousel.style.transform = `rotateY(${deg}deg)`;
+            this.$refs.carousel2.removeEventListener('mousemove', this.moving)
+        },
+        moving(event) {
+            this.mouseData.currentXPosition = event.clientX;
+            let deg = this.getDegSlide(this.indexCurrentSlide);
+            this.$refs.carousel.style.transform = `rotateY(${Number(deg) + (this.shiftMouse / 10)}deg)`;
+            console.log(deg + -(this.shiftMouse / 10))
         }
     },
     computed: {
         slideAngle() {
             return (360 / this.slides.length);
+        },
+        shiftMouse() {
+            return (this.mouseData.startXPosition - this.mouseData.currentXPosition);
         }
     },
     template: `
-        <div @click="this.next()" @resize="this.updateWidth()" class="slider-main" :style="'height: ' + (this.height === undefined ? 'max-content' : (this.height + 'px'))" style="overflow: hidden; width:100%; position: relative;">
-            <div  class="slider-carousel" :style="'transition: 0.3s; perspective: 500px; perspective-origin: 50% 50%; display: flex; height: inherit; min-width: inherit; user-select: none;'">
+        <div @resize="this.updateWidth()" class="slider-main" :style="'height: ' + (this.height === undefined ? 'max-content' : (this.height + 'px'))" style="overflow: hidden; width:100%; position: relative;">
+            <div ref="carousel2" @mousedown="this.mouseDown($event)" @mouseup="this.mouseUp($event)" class="slider-carousel" :style="'transition: 0.3s; perspective: 500px; perspective-origin: 50% 50%; display: flex; height: inherit; min-width: inherit; user-select: none;'">
                 <div ref="carousel" class="3d-carousel" style="transform-style: preserve-3d; width: 100%;" :style="'transform: translateZ(' + this.width + ')'">
                     <slot></slot>
                 </div>
@@ -119,9 +146,6 @@ export const slider = {
             }
         }
 
-
-
-
         if(this.loop) {
             let newSlidesArray = [];
             newSlidesArray.push(this.slides[this.slides.length - 1]);
@@ -131,7 +155,6 @@ export const slider = {
             newSlidesArray.push(this.slides[0]);
 
             this.slides = newSlidesArray;
-
 
             let newLastElement = this.slides[0].cloneNode(true);
             let newFirstElement = this.slides[this.slides.length - 1].cloneNode(true);
@@ -181,7 +204,7 @@ export const slider = {
             this.mouseData.mouseL = true;
             this.mouseData.mouseStartPos = event.clientX;
             this.mouseData.mouseClientX = event.clientX;
-            this.$refs.carousel.addEventListener('mousemove', this.moving)
+            this.$refs.carousel.addEventListener('mousemove', this.moving);
             this.$refs.carousel.addEventListener('mouseleave', this.mouseUp);
         },
         mouseUp() {
