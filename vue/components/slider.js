@@ -41,7 +41,7 @@ export const PSlider = {
             let currentDeg = Number(degPreviousSlide) + this.slideAngle;
             console.log(i + ' --- ' + degPreviousSlide);
             console.log(currentDeg)
-            this.slides[i].style.transform = `rotateY(${currentDeg}deg) translateZ(${this.width}px)`;
+            this.slides[i].style.transform = `rotateY(${currentDeg}deg) translateZ(${-this.width}px)`;
         }
 
         // setInterval(this.rotate, 20)
@@ -87,12 +87,16 @@ export const PSlider = {
             this.mouseData.startXPosition = event.clientX;
             this.mouseData.currentXPosition = event.clientX;
             this.$refs.carousel2.addEventListener('mousemove', this.moving);
+            this.$refs.carousel2.addEventListener('mouseleave', this.mouseUp);
         },
         mouseUp(event) {
             this.mouseData.isHold = false;
             let deg = this.getDegSlide(this.indexCurrentSlide);
             this.$refs.carousel.style.transform = `rotateY(${deg}deg)`;
             this.$refs.carousel2.removeEventListener('mousemove', this.moving)
+            if (this.shiftMouse > this.width / 3) {
+                this.next();
+            }
         },
         moving(event) {
             this.mouseData.currentXPosition = event.clientX;
